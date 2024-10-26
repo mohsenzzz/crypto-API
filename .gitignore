@@ -2,3 +2,6 @@ env/
 .env
 
 .idea/
+
+exchange/archive/
+exchange/local_config.py
