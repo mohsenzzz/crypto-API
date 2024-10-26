@@ -1,9 +1,11 @@
 #pip install requests , use for send request get,post,put,delete
 #also we can use urllib but requests is easier than urllib
-from datetime import datetime
-
+from time import strftime
 
 import requests
+#pip install khayyam, use for get jalalidate and convert datetime to jalalidate
+from khayyam import JalaliDatetime
+from datetime import datetime
 
 #json package use for json data , convert string to json and json to string by loads and dumps
 import json
@@ -30,7 +32,9 @@ def archive(filename:str, rates):
 
 
 def send_email(rates):
-    subject = f'{datetime.now()} - crypto'
+    now = datetime.now()
+    jalaliDate = JalaliDatetime(now),strftime('%Y-%B-%d %A %H:%M')
+    subject = f'{jalaliDate} - crypto'
 
     if rules['email']['preferred'] is not None:
 
@@ -45,13 +49,17 @@ def send_email(rates):
 def send_sms(rates):
     preferred = rules['sms']['preferred']
     msg = None
+    now = datetime.now()
+    jalaliDate = JalaliDatetime(now), strftime('%Y-%B-%d %A %H:%M')
     for exe in preferred.keys():
         if rates[exe] <= preferred[exe]['min'] :
-            msg = f'{exe} reached min: {rates[exe]}'
+            msg = f'{exe} reached min: {rates[exe]} \n'
         if rates[exe] >= preferred[exe]['max']:
-            msg = f'{exe} reached max: {rates[exe]}'
+            msg = f'{exe} reached max: {rates[exe]} \n'
     print("msg is :" + msg)
-    send_notification(msg)
+    if msg is not None:
+        msg += jalaliDate
+        send_notification(msg)
 
 if __name__ == '__main__':
     res = get_response(url)
