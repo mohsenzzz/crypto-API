@@ -11,6 +11,7 @@ import json
 from config import url,rules
 
 from mail import send_smtp_mail
+from sms import send_notification
 
 
 
@@ -32,7 +33,7 @@ def send_email(rates):
     subject = f'{datetime.now()} - crypto'
 
     if rules['email']['preferred'] is not None:
-        print('111111111111111')
+
         tmp = dict()
         for exe in rules['email']['preferred']:
             tmp[exe] = rates[exe]
@@ -41,9 +42,22 @@ def send_email(rates):
     body = json.dumps(rates)
     send_smtp_mail(subject, body)
 
-
+def send_sms(rates):
+    preferred = rules['sms']['preferred']
+    msg = None
+    for exe in preferred.keys():
+        if rates[exe] <= preferred[exe]['min'] :
+            msg = f'{exe} reached min: {rates[exe]}'
+        if rates[exe] >= preferred[exe]['max']:
+            msg = f'{exe} reached max: {rates[exe]}'
+    print("msg is :" + msg)
+    send_notification(msg)
 
 if __name__ == '__main__':
     res = get_response(url)
     archive(res['timestamp'],res['rates'])
-    send_email(res['rates'])
+    if rules['email']['enable']:
+        send_email(res['rates'])
+    if rules['sms']['enable']:
+        send_sms(res['rates'])
+

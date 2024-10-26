@@ -7,9 +7,16 @@ url = BASE_URL+API_KEY
 
 rules ={
     'email':{
-        'enable': True,
+        'enable': False,
         'preferred': {
             'BTC':['BTC',"USD",'IRR',"ETC",'CAD','AED']
+        }
+    },
+    'sms':{
+        'enable':True,
+        'preferred': {
+            'BTC':{'min':1.6113625e-05, 'max':1.6113629e-05},
+            'USD':{'min':1.079969,'max':1.079971}
         }
     }
 }
